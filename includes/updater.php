@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * The repository the plugin is released from.
  */
-const REPOSITORY_URL = 'https://github.com/netzmaedchen/nm-wp-ai-badger/';
+const REPOSITORY_URL = 'https://github.com/forkitten/nm-wp-ai-badger/';
 
 /**
  * Wire up the update checker.
