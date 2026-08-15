@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: NM AI Badger 0.1.0\n"
+"Report-Msgid-Bugs-To: https://netzmaedchen.de/\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: nm-wp-ai-badger\n"
+
+msgid "AI Image Badge"
+msgstr "KI-Bildkennzeichnung"
+
+msgid "AI labelling"
+msgstr "KI-Kennzeichnung"
+
+msgid "AI-generated"
+msgstr "KI-generiert"
+
+msgid "AI-assisted"
+msgstr "KI-unterstützt"
+
+msgid "— None —"
+msgstr "— Keine —"
+
+msgid "Not labelled"
+msgstr "Nicht gekennzeichnet"
+
+msgid "All AI labels"
+msgstr "Alle KI-Kennzeichnungen"
+
+msgid "Filter by AI labelling"
+msgstr "Nach KI-Kennzeichnung filtern"
+
+msgid "Mark as AI-generated"
+msgstr "Als KI-generiert kennzeichnen"
+
+msgid "Mark as AI-assisted"
+msgstr "Als KI-unterstützt kennzeichnen"
+
+msgid "Remove AI labelling"
+msgstr "KI-Kennzeichnung entfernen"
+
+msgid "AI labelling updated for %d image."
+msgid_plural "AI labelling updated for %d images."
+msgstr[0] "KI-Kennzeichnung für %d Bild aktualisiert."
+msgstr[1] "KI-Kennzeichnung für %d Bilder aktualisiert."
+
+msgid "Shows a badge on the front end when this image is used in a supported block."
+msgstr "Zeigt im Frontend ein Badge an, wenn dieses Bild in einem unterstützten Block verwendet wird."
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "media library"
+msgstr "Mediathek"
+
+msgid "Set the label per image in the %s, in the \"AI labelling\" field of the attachment details."
+msgstr "Die Kennzeichnung wird pro Bild in der %s gesetzt, im Feld „KI-Kennzeichnung“ in den Bilddetails."
+
+msgid "The media library list view has an \"AI labelling\" column, a filter and a bulk action for labelling many images at once."
+msgstr "Die Listenansicht der Mediathek hat eine Spalte „KI-Kennzeichnung“, einen Filter und eine Mehrfachaktion, um viele Bilder auf einmal zu kennzeichnen."
+
+msgid "The badge is only rendered for images embedded through these block types: %s."
+msgstr "Das Badge wird nur bei Bildern ausgegeben, die über diese Blocktypen eingebunden sind: %s."
+
+msgid "Images used as CSS background images, or output by other page builders, are not covered."
+msgstr "Bilder, die als CSS-Hintergrundbild eingebunden oder von anderen Page-Buildern ausgegeben werden, sind nicht abgedeckt."
+
+msgid "Badge texts"
+msgstr "Badge-Texte"
+
+msgid "These texts are shown in the badge on the front end. Changing them takes effect immediately and does not touch the labels stored on your images."
+msgstr "Diese Texte erscheinen im Badge im Frontend. Änderungen wirken sofort und lassen die an den Bildern gespeicherten Kennzeichnungen unberührt."
+
+msgid "Leave empty to render no badge for this label."
+msgstr "Leer lassen, damit für diese Kennzeichnung kein Badge ausgegeben wird."
+
+msgid "Hiding the badge on a single image"
+msgstr "Badge bei einzelnen Bildern ausblenden"
+
+msgid "Sometimes a single image should not carry a badge even though it is labelled — for example a decorative background or a logo. Add the CSS class %s to that image and the badge is left out completely. Nothing is hidden with CSS; the badge is simply never written into the page."
+msgstr "Manchmal soll ein einzelnes Bild kein Badge tragen, obwohl es gekennzeichnet ist – etwa ein dekoratives Hintergrundbild oder ein Logo. Wird die CSS-Klasse %s an diesem Bild gesetzt, entfällt das Badge vollständig. Es wird nicht per CSS versteckt, sondern gar nicht erst in die Seite geschrieben."
+
+msgid "In the block editor (Gutenberg)"
+msgstr "Im Block-Editor (Gutenberg)"
+
+msgid "Select the image block."
+msgstr "Den Bild-Block auswählen."
+
+msgid "In the sidebar on the right, open the \"Block\" tab and scroll down to \"Advanced\"."
+msgstr "In der rechten Seitenleiste den Reiter „Block“ öffnen und nach unten zu „Erweitert“ scrollen."
+
+msgid "Type %s into the \"Additional CSS class(es)\" field. If there is already something in there, separate the entries with a space."
+msgstr "%s in das Feld „Zusätzliche CSS-Klasse(n)“ eintragen. Steht dort schon etwas, die Einträge mit einem Leerzeichen trennen."
+
+msgid "Update the post."
+msgstr "Den Beitrag aktualisieren."
+
+msgid "In Etch"
+msgstr "In Etch"
+
+msgid "Select the image element."
+msgstr "Das Bild-Element auswählen."
+
+msgid "Add %s to the element's class attribute. Etch image elements have no separate \"Additional CSS class\" field, so this goes into the regular class attribute alongside your other classes."
+msgstr "%s zum class-Attribut des Elements hinzufügen. Etch-Bildelemente haben kein eigenes Feld „Zusätzliche CSS-Klasse“, die Klasse kommt also zusammen mit den übrigen Klassen in das normale class-Attribut."
+
+msgid "Save."
+msgstr "Speichern."
+
+msgid "Styling"
+msgstr "Gestaltung"
+
+msgid "The plugin ships a small default style. These classes are stable, you can override all of them:"
+msgstr "Das Plugin bringt ein kleines Standard-Styling mit. Diese Klassen sind fest und lassen sich alle überschreiben:"
+
+msgid "The wrapper the plugin puts around the image. Carries position: relative, which is what the badge is positioned against."
+msgstr "Der Wrapper, den das Plugin um das Bild legt. Trägt position: relative und ist damit der Bezugspunkt für die Positionierung des Badges."
+
+msgid "The badge itself: colour, font, padding, position."
+msgstr "Das Badge selbst: Farbe, Schrift, Innenabstand, Position."
+
+msgid "Per label type. Both look identical by default; use these if you want to tell them apart visually."
+msgstr "Je Kennzeichnungstyp. Beide sind standardmäßig identisch gestaltet – über diese Klassen lassen sie sich optisch unterscheiden."
+
+msgid "Custom CSS"
+msgstr "Eigenes CSS"
+
+msgid "Printed after the default style, so you do not need !important to override it."
+msgstr "Wird nach dem Standard-Styling ausgegeben, ein !important ist zum Überschreiben also nicht nötig."
+
+msgid "Background images in Etch"
+msgstr "Hintergrundbilder in Etch"
+
+msgid "Images placed as a background with Etch's %1$s utility are handled automatically: the badge is positioned over the background without disturbing the way the image fills its container. If you use a different utility for background images and the layout breaks once a badge appears, add %2$s to the image. The badge is then still rendered, but without the wrapper element around the image."
+msgstr "Bilder, die mit Etchs %1$s-Utility als Hintergrund eingebunden sind, werden automatisch berücksichtigt: Das Badge liegt über dem Hintergrund, ohne dass das Bild seine Füllung des Containers verliert. Wird für Hintergrundbilder ein anderes Utility genutzt und das Layout bricht, sobald ein Badge erscheint, hilft %2$s am Bild. Das Badge wird dann weiterhin ausgegeben, aber ohne das umschließende Element um das Bild."
