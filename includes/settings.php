@@ -246,18 +246,18 @@ function section_hide(): void {
 	<h3><?php esc_html_e( 'In the block editor (Gutenberg)', 'nm-wp-ai-badger' ); ?></h3>
 	<ol>
 		<li><?php esc_html_e( 'Select the image block.', 'nm-wp-ai-badger' ); ?></li>
-		<li><?php esc_html_e( 'In the sidebar on the right, open the "Block" tab and scroll down to "Advanced".', 'nm-wp-ai-badger' ); ?></li>
-		<li>
-			<?php
-			printf(
-				/* translators: %s: the CSS class name */
-				esc_html__( 'Type %s into the "Additional CSS class(es)" field. If there is already something in there, separate the entries with a space.', 'nm-wp-ai-badger' ),
-				wp_kses( $class, array( 'code' => array() ) )
-			);
-			?>
-		</li>
+		<li><?php esc_html_e( 'In the sidebar on the right, tick "Hide the badge here" underneath the AI labelling field.', 'nm-wp-ai-badger' ); ?></li>
 		<li><?php esc_html_e( 'Update the post.', 'nm-wp-ai-badger' ); ?></li>
 	</ol>
+	<p class="description">
+		<?php
+		printf(
+			/* translators: %s: the CSS class name */
+			esc_html__( 'The checkbox only appears once the image carries a labelling — there is no badge to hide otherwise. Behind the scenes it adds the class %s to the block, so it is the same setting as entering that class by hand under "Advanced".', 'nm-wp-ai-badger' ),
+			wp_kses( $class, array( 'code' => array() ) )
+		);
+		?>
+	</p>
 	<?php if ( \NM\AIBadger\etch_is_active() ) : ?>
 	<h3><?php esc_html_e( 'In Etch', 'nm-wp-ai-badger' ); ?></h3>
 	<ol>

@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace NM\AIBadger\Editor;
 
+use NM\AIBadger\Media;
 use NM\AIBadger\Settings;
 use const NM\AIBadger\EXCLUDE_CLASS;
 use const NM\AIBadger\LABELS;
@@ -29,6 +30,22 @@ function bootstrap(): void {
 }
 
 /**
+ * Cache-busting version for a bundled asset.
+ *
+ * The plugin version alone is not enough: an asset edited between two releases keeps the same URL,
+ * and browsers then serve the stale copy. Falls back to the plugin version if the file cannot be
+ * read, so a missing file never produces an empty version string.
+ *
+ * @param string $relative_path Path relative to the plugin directory.
+ */
+function asset_version( string $relative_path ): string {
+	$file = \NM\AIBadger\PLUGIN_DIR . $relative_path;
+	$time = is_readable( $file ) ? filemtime( $file ) : false;
+
+	return false === $time ? \NM\AIBadger\VERSION : \NM\AIBadger\VERSION . '.' . $time;
+}
+
+/**
  * Enqueue the script that tags labelled image blocks.
  */
 function enqueue_script(): void {
@@ -37,8 +54,8 @@ function enqueue_script(): void {
 	wp_enqueue_script(
 		$handle,
 		plugins_url( 'assets/js/editor.js', \NM\AIBadger\PLUGIN_FILE ),
-		array( 'wp-hooks', 'wp-element', 'wp-compose', 'wp-data' ),
-		\NM\AIBadger\VERSION,
+		array( 'wp-hooks', 'wp-element', 'wp-compose', 'wp-data', 'wp-block-editor', 'wp-components' ),
+		asset_version( 'assets/js/editor.js' ),
 		true
 	);
 
@@ -46,6 +63,15 @@ function enqueue_script(): void {
 
 	foreach ( LABELS as $label ) {
 		$texts[ $label ] = Settings\badge_text( $label );
+	}
+
+	$choices = array();
+
+	foreach ( Media\choices() as $value => $text ) {
+		$choices[] = array(
+			'value' => $value,
+			'label' => $text,
+		);
 	}
 
 	wp_add_inline_script(
@@ -56,6 +82,18 @@ function enqueue_script(): void {
 				'texts'        => $texts,
 				'metaKey'      => \NM\AIBadger\META_KEY,
 				'excludeClass' => EXCLUDE_CLASS,
+				'choices'      => $choices,
+				// Passed through from PHP so the existing .po/.mo stays the single translation
+				// source and no separate JSON translation files are needed.
+				'ui'           => array(
+					'panelTitle' => __( 'AI labelling', 'nm-wp-ai-badger' ),
+					'help'       => __( 'Saved on the image itself, so it applies everywhere the image is used.', 'nm-wp-ai-badger' ),
+					'saving'     => __( 'Saving…', 'nm-wp-ai-badger' ),
+					'saved'      => __( 'Saved.', 'nm-wp-ai-badger' ),
+					'error'      => __( 'Could not save the AI labelling.', 'nm-wp-ai-badger' ),
+					'hideLabel'  => __( 'Hide the badge here', 'nm-wp-ai-badger' ),
+					'hideHelp'   => __( 'Only for this one image on this page. The labelling on the image stays as it is.', 'nm-wp-ai-badger' ),
+				),
 			)
 		) . ';',
 		'before'

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: NM AI Badger 0.1.0\n"
+"Project-Id-Version: NM AI Badger 0.2.0\n"
 "Report-Msgid-Bugs-To: https://netzmaedchen.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -136,3 +136,27 @@ msgstr "Hintergrundbilder in Etch"
 
 msgid "Images placed as a background with Etch's %1$s utility are handled automatically: the badge is positioned over the background without disturbing the way the image fills its container. If you use a different utility for background images and the layout breaks once a badge appears, add %2$s to the image. The badge is then still rendered, but without the wrapper element around the image."
 msgstr "Bilder, die mit Etchs %1$s-Utility als Hintergrund eingebunden sind, werden automatisch berücksichtigt: Das Badge liegt über dem Hintergrund, ohne dass das Bild seine Füllung des Containers verliert. Wird für Hintergrundbilder ein anderes Utility genutzt und das Layout bricht, sobald ein Badge erscheint, hilft %2$s am Bild. Das Badge wird dann weiterhin ausgegeben, aber ohne das umschließende Element um das Bild."
+
+msgid "Saved on the image itself, so it applies everywhere the image is used."
+msgstr "Wird am Bild selbst gespeichert und gilt damit überall, wo das Bild verwendet wird."
+
+msgid "Saving…"
+msgstr "Wird gespeichert …"
+
+msgid "Saved."
+msgstr "Gespeichert."
+
+msgid "Could not save the AI labelling."
+msgstr "Die KI-Kennzeichnung konnte nicht gespeichert werden."
+
+msgid "Hide the badge here"
+msgstr "Badge hier ausblenden"
+
+msgid "Only for this one image on this page. The labelling on the image stays as it is."
+msgstr "Gilt nur für dieses eine Bild auf dieser Seite. Die Kennzeichnung am Bild bleibt bestehen."
+
+msgid "In the sidebar on the right, tick \"Hide the badge here\" underneath the AI labelling field."
+msgstr "In der rechten Seitenleiste unter dem Feld für die KI-Kennzeichnung „Badge hier ausblenden“ anhaken."
+
+msgid "The checkbox only appears once the image carries a labelling — there is no badge to hide otherwise. Behind the scenes it adds the class %s to the block, so it is the same setting as entering that class by hand under \"Advanced\"."
+msgstr "Die Checkbox erscheint erst, wenn das Bild eine Kennzeichnung trägt – sonst gäbe es kein Badge zum Ausblenden. Im Hintergrund setzt sie die Klasse %s am Block; es ist also dieselbe Einstellung, wie wenn man diese Klasse unter „Erweitert“ von Hand einträgt."

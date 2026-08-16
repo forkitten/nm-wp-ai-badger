@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,9 +31,11 @@ The list is filterable, see `nm_ai_badger_supported_blocks` below.
 
 = Hiding the badge on a single image =
 
-Add the CSS class `nm-hide-ai-badge` to the image. The badge is then not written into the page at all — it is not hidden with CSS.
+In the block editor, tick "Hide the badge here" in the image block's sidebar. The checkbox appears once the image carries a labelling.
 
-In Gutenberg the class goes into "Advanced → Additional CSS class(es)". Etch image elements have no such field, so it goes into the element's regular `class` attribute.
+It writes the CSS class `nm-hide-ai-badge` onto the block, which is the same thing as entering that class by hand under "Advanced" — one mechanism, so a class set either way is reflected by the checkbox. Etch image elements have no such field, so there the class goes into the element's regular `class` attribute.
+
+Either way the badge is not written into the page at all; it is not hidden with CSS. The check runs before the labelling is looked up, so a hidden badge costs slightly less to render than a visible one.
 
 = Styling =
 
@@ -51,7 +53,9 @@ Etch's `is-bg` background utility styles the image with a direct-child selector 
 
 = Block editor =
 
-Labelled images show a badge preview on the block editor canvas, drawn as a CSS pseudo-element over the image. It is a preview: it uses the plugin's default badge styling, so custom CSS from the settings does not change how it looks there. Etch's own canvas renders client-side and is not covered — there the badge appears on the front end only.
+Image blocks carry an "AI labelling" panel in the block sidebar, so an image uploaded straight into a post can be labelled without opening the media library. The value belongs to the image, not to the block, so it is saved immediately rather than with the post, and it applies everywhere that image is used.
+
+Labelled images also show a badge preview on the editor canvas, drawn as a CSS pseudo-element over the image. It is a preview: it uses the plugin's default badge styling, so custom CSS from the settings does not change how it looks there. Etch's own canvas renders client-side and is not covered — there the badge appears on the front end only.
 
 = Known limitation =
 
@@ -68,6 +72,12 @@ Everywhere else the plugin wraps the `<img>` in a `<span>` to create a positioni
 `nm_ai_badger_background_classes` — class names that mark a container as holding a background image. Defaults to `is-bg`.
 
 `nm_ai_badger_etch_is_active` — override the Etch detection. Etch-specific block support, documentation and settings are all conditional on it.
+
+== Data ==
+
+Labels are stored in the attachment meta key `_nm_ai_badge` with the stable values `generated` and `assisted`. The badge texts shown on the front end come from the settings, so changing the wording never requires a data migration.
+
+Uninstalling removes the plugin's settings. The per-image labels are deliberately kept.
 
 == Updates ==
 
@@ -101,13 +111,12 @@ For a public repository no credentials are needed. If the repository is private,
 
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
-== Data ==
-
-Labels are stored in the attachment meta key `_nm_ai_badge` with the stable values `generated` and `assisted`. The badge texts shown on the front end come from the settings, so changing the wording never requires a data migration.
-
-Uninstalling removes the plugin's settings. The per-image labels are deliberately kept.
-
 == Changelog ==
+
+= 0.2.0 =
+* Added an "AI labelling" field to the image block sidebar (in the settings tab), so images uploaded straight into a post can be labelled without opening the media library. The value is saved on the image immediately and applies everywhere that image is used.
+* Added a "Hide the badge here" checkbox in the same place, for leaving the badge off a single image without having to type a CSS class. It sets the existing `nm-hide-ai-badge` class, so both ways of hiding remain one and the same setting.
+* Fixed: editor assets were cached by the browser across plugin updates. The asset version now includes the file's modification time.
 
 = 0.1.0 =
 * Initial release.
