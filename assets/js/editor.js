@@ -49,7 +49,57 @@
 			// A dynamic expression such as {item.image.id} only resolves on the front end.
 			return isNaN( id ) ? undefined : id;
 		},
+		// The featured image block holds no media reference of its own; see resolveAttachmentId().
+		'core/post-featured-image': null,
 	};
+
+	/**
+	 * Blocks whose image is chosen in the block itself, so editing its labelling here is meaningful.
+	 *
+	 * The featured image block is deliberately absent: it is a template. Inside a query loop it is
+	 * placed once and rendered for many posts, so a labelling field would edit whichever post the
+	 * editor happens to resolve — arbitrary from the author's point of view. Only the checkbox,
+	 * which is a property of the block, makes sense there.
+	 */
+	var LABEL_FIELD_BLOCKS = [ 'core/image', 'core/cover', 'etch/dynamic-image' ];
+
+	function offersLabelField( name ) {
+		return LABEL_FIELD_BLOCKS.indexOf( name ) !== -1;
+	}
+
+	/**
+	 * Whether the plugin handles this block type. Cannot be a truthiness check on the map: the
+	 * featured image block is registered with a null resolver.
+	 */
+	function isSupported( name ) {
+		return Object.prototype.hasOwnProperty.call( SUPPORTED, name );
+	}
+
+	/**
+	 * The attachment a block shows, resolved inside a useSelect callback.
+	 *
+	 * Most blocks state it in their own attributes. The featured image block does not — it belongs
+	 * to the post being rendered, which inside a query loop is not the post being edited.
+	 */
+	function resolveAttachmentId( select, name, attributes, context ) {
+		if ( 'core/post-featured-image' === name ) {
+			if ( context.postId && context.postType ) {
+				// Edited, not saved: a featured image just picked but not yet published must show
+				// its labelling straight away.
+				var record = select( 'core' ).getEditedEntityRecord( 'postType', context.postType, context.postId );
+
+				return record ? record.featured_media : undefined;
+			}
+
+			var editor = select( 'core/editor' );
+
+			return editor ? editor.getEditedPostAttribute( 'featured_media' ) : undefined;
+		}
+
+		var getId = SUPPORTED[ name ];
+
+		return getId ? getId( attributes ) : undefined;
+	}
 
 	/**
 	 * Whether the block opts out via the exclusion class.
@@ -80,6 +130,14 @@
 			},
 		},
 		'core/cover': {
+			read: function ( attributes ) {
+				return attributes.className || '';
+			},
+			write: function ( value ) {
+				return { className: value || undefined };
+			},
+		},
+		'core/post-featured-image': {
 			read: function ( attributes ) {
 				return attributes.className || '';
 			},
@@ -130,14 +188,26 @@
 	 */
 	var withInspector = wp.compose.createHigherOrderComponent( function ( BlockEdit ) {
 		return function ( props ) {
-			var getId = SUPPORTED[ props.name ];
-			var attachmentId = getId ? getId( props.attributes || {} ) : undefined;
 			var state = wp.element.useState( '' );
 			var status = state[ 0 ];
 			var setStatus = state[ 1 ];
 
 			var data = wp.data.useSelect(
 				function ( select ) {
+					// Only the labelling field needs the attachment. Blocks that just get the
+					// checkbox skip the lookup — a query loop would otherwise resolve and fetch a
+					// post plus its media for every entry, to no purpose.
+					if ( ! offersLabelField( props.name ) ) {
+						return null;
+					}
+
+					var attachmentId = resolveAttachmentId(
+						select,
+						props.name,
+						props.attributes || {},
+						props.context || {}
+					);
+
 					if ( ! attachmentId ) {
 						return null;
 					}
@@ -146,20 +216,26 @@
 					var media = core.getMedia( attachmentId );
 
 					return {
+						attachmentId: attachmentId,
 						label: ( media && media.meta && media.meta[ metaKey ] ) || '',
 						loaded: !! media,
 						canEdit: core.canUser( 'update', 'media', attachmentId ),
 					};
 				},
-				[ attachmentId ]
+				[ props.name, props.attributes, props.context ]
 			);
 
 			var edit = wp.element.createElement( BlockEdit, props );
 
-			// No image chosen yet, still loading, or read-only for this user.
-			if ( ! attachmentId || ! data || ! data.loaded || data.canEdit === false ) {
+			if ( ! isSupported( props.name ) ) {
 				return edit;
 			}
+
+			var classField = CLASS_FIELD[ props.name ];
+			var showLabel = offersLabelField( props.name );
+
+			// The labelling field needs a readable, editable attachment; the checkbox does not.
+			var labelReady = !! data && data.loaded && data.canEdit !== false;
 
 			function onChange( value ) {
 				var meta = {};
@@ -169,7 +245,7 @@
 
 				wp.data
 					.dispatch( 'core' )
-					.saveEntityRecord( 'root', 'media', { id: attachmentId, meta: meta } )
+					.saveEntityRecord( 'root', 'media', { id: data.attachmentId, meta: meta } )
 					.then( function () {
 						setStatus( ui.saved || '' );
 					} )
@@ -178,69 +254,71 @@
 					} );
 			}
 
-			// Rendered into the settings group without a PanelBody title, so it reads as another
-			// field in the Settings tab rather than a separate collapsible section. WordPress always
-			// appends extension controls after the block's own panels, so this sits below the alt
-			// text rather than directly beneath it — there is no API to insert into a core panel.
-			var classField = CLASS_FIELD[ props.name ];
-			var hidden = isExcluded( props.attributes || {} );
-
 			function onToggleHidden( checked ) {
 				if ( ! classField ) {
 					return;
 				}
 
-				var current = classField.read( props.attributes || {} );
-
 				props.setAttributes(
 					classField.write(
-						toggleClass( current, excludeClass, checked ),
+						toggleClass( classField.read( props.attributes || {} ), excludeClass, checked ),
 						props.attributes || {}
 					)
 				);
 			}
 
-			var fields = [
-				wp.element.createElement( wp.components.SelectControl, {
-					__nextHasNoMarginBottom: true,
-					key: 'label',
-					label: ui.panelTitle,
-					value: data.label,
-					options: choices,
-					onChange: onChange,
-					help: status || undefined,
-				} ),
-			];
+			var fields = [];
 
-			// The labelling lives on the attachment, so it is not scoped to this block the way the
-			// rest of the sidebar is. Worth stating plainly rather than hiding in a help text.
-			if ( ui.warning ) {
+			if ( showLabel && labelReady ) {
 				fields.push(
-					wp.element.createElement(
-						wp.components.Notice,
-						{
-							key: 'warning',
-							status: 'warning',
-							isDismissible: false,
-							politeness: 'polite',
-						},
-						ui.warning
-					)
+					wp.element.createElement( wp.components.SelectControl, {
+						__nextHasNoMarginBottom: true,
+						key: 'label',
+						label: ui.panelTitle,
+						value: data.label,
+						options: choices,
+						onChange: onChange,
+						help: status || undefined,
+					} )
 				);
+
+				// The labelling lives on the attachment, so it is not scoped to this block the way
+				// the rest of the sidebar is. Worth stating plainly rather than hiding in help text.
+				if ( ui.warning ) {
+					fields.push(
+						wp.element.createElement(
+							wp.components.Notice,
+							{
+								key: 'warning',
+								status: 'warning',
+								isDismissible: false,
+								politeness: 'polite',
+							},
+							ui.warning
+						)
+					);
+				}
 			}
 
-			// Only offered where the badge would actually show: an unlabelled image has none to hide.
-			if ( classField && data.label ) {
+			// Where the image is picked in the block, hiding is only offered once there is a badge
+			// to hide. Where it is dynamic, the choice has to be available up front.
+			var offerCheckbox = classField && ( showLabel ? labelReady && data.label : true );
+
+			if ( offerCheckbox ) {
 				fields.push(
 					wp.element.createElement( wp.components.CheckboxControl, {
 						__nextHasNoMarginBottom: true,
 						key: 'hide',
 						label: ui.hideLabel,
-						checked: hidden,
+						checked: isExcluded( props.attributes || {} ),
 						onChange: onToggleHidden,
-						help: ui.hideHelp,
+						help: showLabel ? ui.hideHelp : ui.hideHelpDynamic,
 					} )
 				);
+			}
+
+			if ( ! fields.length ) {
+				return edit;
 			}
 
 			var control = wp.element.createElement(
@@ -259,12 +337,21 @@
 
 	var withBadge = wp.compose.createHigherOrderComponent( function ( BlockListBlock ) {
 		return function ( props ) {
-			var getId = SUPPORTED[ props.name ];
 			var attributes = props.attributes || {};
-			var attachmentId = getId ? getId( attributes ) : undefined;
 
 			var label = wp.data.useSelect(
 				function ( select ) {
+					if ( ! isSupported( props.name ) ) {
+						return '';
+					}
+
+					var attachmentId = resolveAttachmentId(
+						select,
+						props.name,
+						attributes,
+						props.context || {}
+					);
+
 					if ( ! attachmentId ) {
 						return '';
 					}
@@ -273,7 +360,7 @@
 
 					return ( media && media.meta && media.meta[ metaKey ] ) || '';
 				},
-				[ attachmentId ]
+				[ props.name, attributes, props.context ]
 			);
 
 			var text = label ? texts[ label ] : '';

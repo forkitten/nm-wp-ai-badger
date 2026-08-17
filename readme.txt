@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,7 @@ The badge is injected server-side through the `render_block` filter. No JavaScri
 
 * `core/image` — including images nested in galleries and columns
 * `core/cover` — the cover's background image; images placed inside a cover keep their own badge
+* `core/post-featured-image` — including inside a query loop, where each entry resolves to its own post's image
 * `etch/dynamic-image` — including images inside Etch loops, where the media ID is a dynamic expression
 
 The list is filterable, see `nm_ai_badger_supported_blocks` below.
@@ -27,7 +28,7 @@ The list is filterable, see `nm_ai_badger_supported_blocks` below.
 = Not covered =
 
 * Images used as CSS `background-image` (no attachment ID in the markup)
-* Featured images rendered by a theme template rather than a block
+* Featured images rendered by a theme template's `the_post_thumbnail()` rather than by the featured image block
 * Other page builders (Beaver Builder, Bricks)
 
 = Hiding the badge on a single image =
@@ -56,7 +57,11 @@ Etch's `is-bg` background utility styles the image with a direct-child selector 
 
 = Block editor =
 
-Image and cover blocks carry an "AI labelling" field and a "Hide the badge here" checkbox in the block sidebar, so an image uploaded straight into a post can be labelled without opening the media library. A cover with a video background offers neither, since it renders no image to badge. The value belongs to the image, not to the block: it is saved immediately rather than with the post, and it applies to every page where that image appears. The sidebar states this as a warning, since the rest of the block settings are scoped to the block. The "Hide the badge here" checkbox is the local counterpart — it only affects the one block it sits in.
+Image and cover blocks carry an "AI labelling" field and a "Hide the badge here" checkbox in the block sidebar, so an image uploaded straight into a post can be labelled without opening the media library. A cover with a video background offers neither, since it renders no image to badge.
+
+The labelling belongs to the image, not to the block: it is saved immediately rather than with the post, and it applies to every page where that image appears. The sidebar states this as a warning, since the rest of the block settings are scoped to the block. The "Hide the badge here" checkbox is the local counterpart — it only affects the block it sits in.
+
+The featured image block gets the checkbox only. It is a template: placed once, rendered for many posts, so a labelling field there would edit whichever post the editor happened to resolve. Deciding that a listing shows no badges is a property of the block and belongs there; labelling the images themselves belongs in the media library, or in the blocks that actually hold an image.
 
 Labelled images also show a badge preview on the editor canvas, drawn as a CSS pseudo-element over the image. It is a preview: it uses the plugin's default badge styling, so custom CSS from the settings does not change how it looks there. Etch's own canvas renders client-side and is not covered — there the badge appears on the front end only.
 
@@ -115,6 +120,10 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+
+= 0.4.0 =
+* Added support for the featured image block. Inside a query loop each entry resolves to its own post's image, not the post being edited.
+* The featured image block's sidebar offers only the "Hide the badge here" checkbox. The block is a template — placed once, rendered for many posts — so labelling one image from there would be meaningless. Use it to keep a listing free of badges.
 
 = 0.3.0 =
 * Added support for the cover block. The badge sits on the cover's background image; an image block placed inside a cover keeps its own badge, so a cover with both shows two.

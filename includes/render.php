@@ -28,7 +28,7 @@ function bootstrap(): void {
  */
 function add_filters(): void {
 	foreach ( supported_blocks() as $block_name ) {
-		add_filter( 'render_block_' . $block_name, __NAMESPACE__ . '\\maybe_inject_badge', 10, 2 );
+		add_filter( 'render_block_' . $block_name, __NAMESPACE__ . '\\maybe_inject_badge', 10, 3 );
 	}
 
 	if ( \NM\AIBadger\etch_is_active() ) {
@@ -121,7 +121,7 @@ function unwrap_badge( string $html ): string {
  * @return array<int, string>
  */
 function supported_blocks(): array {
-	$blocks = array( 'core/image', 'core/cover' );
+	$blocks = array( 'core/image', 'core/cover', 'core/post-featured-image' );
 
 	if ( \NM\AIBadger\etch_is_active() ) {
 		$blocks[] = 'etch/dynamic-image';
@@ -137,8 +137,9 @@ function supported_blocks(): array {
  *
  * @param string               $block_content Rendered block HTML.
  * @param array<string, mixed> $block         Parsed block.
+ * @param \WP_Block|null       $instance      Block instance, carries the rendering context.
  */
-function maybe_inject_badge( string $block_content, array $block ): string {
+function maybe_inject_badge( string $block_content, array $block, ?\WP_Block $instance = null ): string {
 	if ( '' === trim( $block_content ) || is_admin() || is_feed() ) {
 		return $block_content;
 	}
@@ -148,7 +149,7 @@ function maybe_inject_badge( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	$attachment_id = attachment_id_for_block( $block_content, $block );
+	$attachment_id = attachment_id_for_block( $block_content, $block, $instance );
 
 	if ( ! $attachment_id ) {
 		return $block_content;
@@ -298,11 +299,22 @@ function has_class( string $html, string $class_name ): bool {
  *
  * @param string               $block_content Rendered block HTML.
  * @param array<string, mixed> $block         Parsed block.
+ * @param \WP_Block|null       $instance      Block instance, carries the rendering context.
  */
-function attachment_id_for_block( string $block_content, array $block ): int {
+function attachment_id_for_block( string $block_content, array $block, ?\WP_Block $instance = null ): int {
 	$attrs = $block['attrs'] ?? array();
 
-	// core/image and anything else that puts a plain ID at the top level.
+	// The featured image block stores no media reference of its own — it belongs to the post it is
+	// rendered for. Inside a query loop that post comes from the block context, not the main query.
+	if ( 'core/post-featured-image' === ( $block['blockName'] ?? '' ) ) {
+		$post_id = (int) ( $instance->context['postId'] ?? get_the_ID() );
+
+		if ( $post_id ) {
+			return (int) get_post_thumbnail_id( $post_id );
+		}
+	}
+
+	// core/image, core/cover and anything else that puts a plain ID at the top level.
 	$id = numeric_id( $attrs['id'] ?? null );
 
 	// etch/dynamic-image nests its attributes one level deeper. The value is a string, and in a

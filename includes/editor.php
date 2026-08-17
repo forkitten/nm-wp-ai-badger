@@ -93,6 +93,9 @@ function enqueue_script(): void {
 					'error'      => __( 'Could not save the AI labelling.', 'nm-wp-ai-badger' ),
 					'hideLabel'  => __( 'Hide the badge here', 'nm-wp-ai-badger' ),
 					'hideHelp'   => __( 'Only for this one image on this page. The labelling on the image stays as it is.', 'nm-wp-ai-badger' ),
+					// The featured image block is a template: it renders for many posts, so the
+					// checkbox cannot be described as applying to one image.
+					'hideHelpDynamic' => __( 'Leaves the badge off wherever this block appears — in a query loop that means every entry. The labelling on the images stays as it is.', 'nm-wp-ai-badger' ),
 				),
 			)
 		) . ';',

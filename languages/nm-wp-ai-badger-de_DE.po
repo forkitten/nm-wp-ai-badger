@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: NM AI Badger 0.3.0\n"
+"Project-Id-Version: NM AI Badger 0.4.0\n"
 "Report-Msgid-Bugs-To: https://netzmaedchen.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -160,3 +160,6 @@ msgstr "In der rechten Seitenleiste unter dem Feld für die KI-Kennzeichnung „
 
 msgid "The checkbox only appears once the image carries a labelling — there is no badge to hide otherwise. Behind the scenes it adds the class %s to the block, so it is the same setting as entering that class by hand under \"Advanced\"."
 msgstr "Die Checkbox erscheint erst, wenn das Bild eine Kennzeichnung trägt – sonst gäbe es kein Badge zum Ausblenden. Im Hintergrund setzt sie die Klasse %s am Block; es ist also dieselbe Einstellung, wie wenn man diese Klasse unter „Erweitert“ von Hand einträgt."
+
+msgid "Leaves the badge off wherever this block appears — in a query loop that means every entry. The labelling on the images stays as it is."
+msgstr "Blendet das Badge überall aus, wo dieser Block ausgegeben wird – in einem Loop also bei allen Einträgen. Die Kennzeichnung an den Bildern bleibt bestehen."
