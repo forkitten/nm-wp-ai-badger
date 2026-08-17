@@ -18,7 +18,7 @@ The badge is injected server-side through the `render_block` filter. No JavaScri
 
 = Supported blocks =
 
-* `core/image` — including images nested in galleries and columns
+* `core/image` — including images nested in galleries and columns and so on
 * `core/cover` — the cover's background image; images placed inside a cover keep their own badge
 * `core/post-featured-image` — including inside a query loop, where each entry resolves to its own post's image
 * `etch/dynamic-image` — including images inside Etch loops, where the media ID is a dynamic expression
