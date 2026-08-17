@@ -37,6 +37,11 @@
 		'core/image': function ( attributes ) {
 			return attributes.id;
 		},
+		'core/cover': function ( attributes ) {
+			// A cover with a video background keeps an attachment id too, but renders no <img> —
+			// the front end shows no badge there, so the editor must not offer one either.
+			return 'video' === attributes.backgroundType ? undefined : attributes.id;
+		},
 		'etch/dynamic-image': function ( attributes ) {
 			var nested = attributes.attributes || {};
 			var id = parseInt( nested.mediaId, 10 );
@@ -67,6 +72,14 @@
 	 */
 	var CLASS_FIELD = {
 		'core/image': {
+			read: function ( attributes ) {
+				return attributes.className || '';
+			},
+			write: function ( value ) {
+				return { className: value || undefined };
+			},
+		},
+		'core/cover': {
 			read: function ( attributes ) {
 				return attributes.className || '';
 			},
@@ -195,9 +208,26 @@
 					value: data.label,
 					options: choices,
 					onChange: onChange,
-					help: status || ui.help,
+					help: status || undefined,
 				} ),
 			];
+
+			// The labelling lives on the attachment, so it is not scoped to this block the way the
+			// rest of the sidebar is. Worth stating plainly rather than hiding in a help text.
+			if ( ui.warning ) {
+				fields.push(
+					wp.element.createElement(
+						wp.components.Notice,
+						{
+							key: 'warning',
+							status: 'warning',
+							isDismissible: false,
+							politeness: 'polite',
+						},
+						ui.warning
+					)
+				);
+			}
 
 			// Only offered where the badge would actually show: an unlabelled image has none to hide.
 			if ( classField && data.label ) {

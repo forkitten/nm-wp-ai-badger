@@ -121,7 +121,7 @@ function unwrap_badge( string $html ): string {
  * @return array<int, string>
  */
 function supported_blocks(): array {
-	$blocks = array( 'core/image' );
+	$blocks = array( 'core/image', 'core/cover' );
 
 	if ( \NM\AIBadger\etch_is_active() ) {
 		$blocks[] = 'etch/dynamic-image';
@@ -166,7 +166,18 @@ function maybe_inject_badge( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	$wrapped = wrap_image( $block_content, $label, $text );
+	$badge = badge_html( $label, $text );
+
+	// An image that is itself a background — core/cover's background image, for instance — is
+	// positioned against its container by the theme's or core's CSS. A wrapper would become that
+	// container and collapse the image, so the badge goes in as a plain sibling instead.
+	$background_class = background_image_class( $block_content );
+
+	if ( '' !== $background_class ) {
+		return append_badge_after_image( $block_content, $background_class, $badge );
+	}
+
+	$wrapped = wrap_image( $block_content, $badge );
 
 	// Manual escape hatch for layouts the wrapper would break — see NOWRAP_CLASS.
 	if ( has_class( $block_content, NOWRAP_CLASS ) ) {
@@ -174,6 +185,69 @@ function maybe_inject_badge( string $block_content, array $block ): string {
 	}
 
 	return $wrapped;
+}
+
+/**
+ * Classes that mark an `<img>` as a background image rather than a content image.
+ *
+ * @return array<int, string>
+ */
+function background_image_classes(): array {
+	/**
+	 * Filters the classes that identify an image as a background image.
+	 *
+	 * @param array<int, string> $classes Class names.
+	 */
+	$classes = apply_filters( 'nm_ai_badger_background_image_classes', array( 'wp-block-cover__image-background' ) );
+
+	return array_values( array_filter( array_map( 'strval', (array) $classes ) ) );
+}
+
+/**
+ * The background class present in the markup, or an empty string.
+ *
+ * @param string $html Rendered block HTML.
+ */
+function background_image_class( string $html ): string {
+	foreach ( background_image_classes() as $class_name ) {
+		if ( has_class( $html, $class_name ) ) {
+			return $class_name;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Insert the badge directly after the image carrying a given class.
+ *
+ * Targets that specific image rather than the first one in the markup: a cover block can hold
+ * further image blocks in its inner container, and those carry their own badge already.
+ *
+ * @param string $html       Rendered block HTML.
+ * @param string $class_name Class identifying the image.
+ * @param string $badge      Badge markup.
+ */
+function append_badge_after_image( string $html, string $class_name, string $badge ): string {
+	$pattern = '#<img\b[^>]*\bclass="[^"]*(?<![\w-])' . preg_quote( $class_name, '#' ) . '(?![\w-])[^"]*"[^>]*>#i';
+
+	$result = preg_replace( $pattern, '$0' . str_replace( '$', '\\$', $badge ), $html, 1, $count );
+
+	return ( is_string( $result ) && $count > 0 ) ? $result : $html;
+}
+
+/**
+ * The badge element.
+ *
+ * @param string $label Stable label value.
+ * @param string $text  Badge text.
+ */
+function badge_html( string $label, string $text ): string {
+	return sprintf(
+		'<span class="nm-ai-badge nm-ai-badge--%s">%s</span>',
+		esc_attr( $label ),
+		esc_html( $text )
+	);
 }
 
 /**
@@ -348,16 +422,10 @@ function attachment_id_from_url( string $url ): int {
  * block. That keeps figure/caption markup and the theme's alignment classes intact, and it anchors
  * the badge to the image instead of to the caption below it.
  *
- * @param string $label Stable label value.
- * @param string $text  Badge text.
+ * @param string $block_content Rendered block HTML.
+ * @param string $badge         Badge markup.
  */
-function wrap_image( string $block_content, string $label, string $text ): string {
-	$badge = sprintf(
-		'<span class="nm-ai-badge nm-ai-badge--%s">%s</span>',
-		esc_attr( $label ),
-		esc_html( $text )
-	);
-
+function wrap_image( string $block_content, string $badge ): string {
 	// Prefer wrapping an anchor around the image, so the badge does not become part of the link text.
 	$patterns = array(
 		'#(<a\b[^>]*>\s*<img\b[^>]*>\s*</a>)#i',

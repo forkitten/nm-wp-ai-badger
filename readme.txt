@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,7 @@ The badge is injected server-side through the `render_block` filter. No JavaScri
 = Supported blocks =
 
 * `core/image` — including images nested in galleries and columns
+* `core/cover` — the cover's background image; images placed inside a cover keep their own badge
 * `etch/dynamic-image` — including images inside Etch loops, where the media ID is a dynamic expression
 
 The list is filterable, see `nm_ai_badger_supported_blocks` below.
@@ -49,11 +50,13 @@ The default style uses single-class selectors and no `!important`, so overriding
 
 = Background images =
 
+Some images are backgrounds rather than content: they are positioned absolutely against their container and stretched to fill it. Wrapping such an image would collapse it, so there the badge goes in as a plain sibling of the image instead. This applies to the cover block's background image and to Etch's `is-bg` utility; the class list is filterable via `nm_ai_badger_background_image_classes`.
+
 Etch's `is-bg` background utility styles the image with a direct-child selector and positions it absolutely inside its figure. For those images the plugin leaves the wrapper out and renders the badge as a sibling of the image instead, so the background keeps working and the badge still appears over it.
 
 = Block editor =
 
-Image blocks carry an "AI labelling" panel in the block sidebar, so an image uploaded straight into a post can be labelled without opening the media library. The value belongs to the image, not to the block, so it is saved immediately rather than with the post, and it applies everywhere that image is used.
+Image and cover blocks carry an "AI labelling" field and a "Hide the badge here" checkbox in the block sidebar, so an image uploaded straight into a post can be labelled without opening the media library. A cover with a video background offers neither, since it renders no image to badge. The value belongs to the image, not to the block: it is saved immediately rather than with the post, and it applies to every page where that image appears. The sidebar states this as a warning, since the rest of the block settings are scoped to the block. The "Hide the badge here" checkbox is the local counterpart — it only affects the one block it sits in.
 
 Labelled images also show a badge preview on the editor canvas, drawn as a CSS pseudo-element over the image. It is a preview: it uses the plugin's default badge styling, so custom CSS from the settings does not change how it looks there. Etch's own canvas renders client-side and is not covered — there the badge appears on the front end only.
 
@@ -112,6 +115,11 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+
+= 0.3.0 =
+* Added support for the cover block. The badge sits on the cover's background image; an image block placed inside a cover keeps its own badge, so a cover with both shows two.
+* The cover block's sidebar now offers the same "AI labelling" field and "Hide the badge here" checkbox as the image block.
+* The sidebar warns that the labelling belongs to the image and applies wherever that image is used, to set it apart from the block-scoped settings around it.
 
 = 0.2.0 =
 * Added an "AI labelling" field to the image block sidebar (in the settings tab), so images uploaded straight into a post can be labelled without opening the media library. The value is saved on the image immediately and applies everywhere that image is used.

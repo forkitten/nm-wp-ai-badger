@@ -87,7 +87,7 @@ function enqueue_script(): void {
 				// source and no separate JSON translation files are needed.
 				'ui'           => array(
 					'panelTitle' => __( 'AI labelling', 'nm-wp-ai-badger' ),
-					'help'       => __( 'Saved on the image itself, so it applies everywhere the image is used.', 'nm-wp-ai-badger' ),
+					'warning'    => __( 'This setting belongs to the image, not to this block. Changing it affects every page where the image is used.', 'nm-wp-ai-badger' ),
 					'saving'     => __( 'Saving…', 'nm-wp-ai-badger' ),
 					'saved'      => __( 'Saved.', 'nm-wp-ai-badger' ),
 					'error'      => __( 'Could not save the AI labelling.', 'nm-wp-ai-badger' ),
@@ -149,8 +149,9 @@ function canvas_css(): string {
 	pointer-events: none;
 }
 
-/* With a caption the bottom edge belongs to the text, so the badge moves to the top of the image. */
-.wp-block{$attr}:has( figcaption )::after {
+/* With a caption the bottom edge belongs to the text, so the badge moves to the top of the image.
+   Direct child only: a cover block may contain a captioned image without being captioned itself. */
+.wp-block{$attr}:has( > figcaption )::after {
 	top: 0.5em;
 	bottom: auto;
 }
