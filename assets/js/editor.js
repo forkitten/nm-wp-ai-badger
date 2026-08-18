@@ -42,6 +42,19 @@
 			// the front end shows no badge there, so the editor must not offer one either.
 			return 'video' === attributes.backgroundType ? undefined : attributes.id;
 		},
+		'core/media-text': function ( attributes ) {
+			// A media-text block can hold a video instead; then there is no image to badge.
+			return 'video' === attributes.mediaType ? undefined : attributes.mediaId;
+		},
+		'core/group': function ( attributes ) {
+			// Group, row and stack keep their background image in the style attribute.
+			var background =
+				attributes.style &&
+				attributes.style.background &&
+				attributes.style.background.backgroundImage;
+
+			return background ? background.id : undefined;
+		},
 		'etch/dynamic-image': function ( attributes ) {
 			var nested = attributes.attributes || {};
 			var id = parseInt( nested.mediaId, 10 );
@@ -61,7 +74,13 @@
 	 * editor happens to resolve — arbitrary from the author's point of view. Only the checkbox,
 	 * which is a property of the block, makes sense there.
 	 */
-	var LABEL_FIELD_BLOCKS = [ 'core/image', 'core/cover', 'etch/dynamic-image' ];
+	var LABEL_FIELD_BLOCKS = [
+		'core/image',
+		'core/cover',
+		'core/media-text',
+		'core/group',
+		'etch/dynamic-image',
+	];
 
 	function offersLabelField( name ) {
 		return LABEL_FIELD_BLOCKS.indexOf( name ) !== -1;
@@ -138,6 +157,22 @@
 			},
 		},
 		'core/post-featured-image': {
+			read: function ( attributes ) {
+				return attributes.className || '';
+			},
+			write: function ( value ) {
+				return { className: value || undefined };
+			},
+		},
+		'core/media-text': {
+			read: function ( attributes ) {
+				return attributes.className || '';
+			},
+			write: function ( value ) {
+				return { className: value || undefined };
+			},
+		},
+		'core/group': {
 			read: function ( attributes ) {
 				return attributes.className || '';
 			},

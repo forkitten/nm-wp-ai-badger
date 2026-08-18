@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,13 +21,14 @@ The badge is injected server-side through the `render_block` filter. No JavaScri
 * `core/image` — including images nested in galleries and columns and so on
 * `core/cover` — the cover's background image; images placed inside a cover keep their own badge
 * `core/post-featured-image` — including inside a query loop, where each entry resolves to its own post's image
+* `core/media-text` — the media column's image
+* `core/group` — the background image of a group, row or stack; there is no image element in the markup at all
 * `etch/dynamic-image` — including images inside Etch loops, where the media ID is a dynamic expression
 
 The list is filterable, see `nm_ai_badger_supported_blocks` below.
 
 = Not covered =
 
-* Images used as CSS `background-image` (no attachment ID in the markup)
 * Featured images rendered by a theme template's `the_post_thumbnail()` rather than by the featured image block
 * Other page builders (Beaver Builder, Bricks)
 
@@ -120,6 +121,11 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+
+= 0.5.0 =
+* Added support for the media & text block and for background images on group, row and stack blocks. A group's background is pure CSS with no image element, so there the badge becomes the block's own last child.
+* Fixed: images in a cropped gallery lost their cropping. The gallery lays its items out as flex containers and expects the image itself to fill the column; the wrapper took that role and shrank to the image's intrinsic size. Gallery items now carry the badge beside the image instead.
+* Fixed: a container block without its own image could adopt an image from its contents and badge it. The lookup that recovers an attachment from the rendered URL is now limited to blocks that genuinely need it.
 
 = 0.4.0 =
 * Added support for the featured image block. Inside a query loop each entry resolves to its own post's image, not the post being edited.

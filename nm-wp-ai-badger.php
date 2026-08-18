@@ -3,7 +3,7 @@
  * Plugin Name:       NM AI Badger
  * Plugin URI:        https://netzmaedchen.de/
  * Description:       Marks media library images as AI-generated or AI-assisted and renders a badge on the front end, server-side, for Gutenberg and Etch images.
- * Version:           0.4.0
+ * Version:           0.5.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            netzmaedchen
@@ -22,7 +22,7 @@ namespace NM\AIBadger;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 
 /**
  * Attachment meta key holding the label. Stable — display texts live in the settings.
@@ -44,6 +44,11 @@ const EXCLUDE_CLASS = 'nm-hide-ai-badge';
  * whose own CSS targets the image with a direct-child selector.
  */
 const NOWRAP_CLASS = 'nm-ai-badge-nowrap';
+
+/**
+ * CSS class added to whatever element a bare badge is positioned against.
+ */
+const HOST_CLASS = 'nm-ai-badge-host';
 
 /**
  * The stable, code-side label values. Never change these — display texts are configurable.

@@ -49,6 +49,12 @@ function default_css(): string {
 	line-height: 0;
 }
 
+/* Elements the badge is positioned against when it sits beside the image instead of inside a
+   wrapper — gallery items, media columns, blocks with a background image. */
+.nm-ai-badge-host {
+	position: relative;
+}
+
 .nm-ai-badge {
 	position: absolute;
 	bottom: 0.5em;
