@@ -77,6 +77,31 @@ function default_css(): string {
 	pointer-events: none;
 }
 
+/* A badge beside its image (no wrapper) is positioned against the parent. Zero specificity, so a
+   parent that is positioned already — e.g. an absolutely placed background figure — keeps that. */
+:where(:has(> .nm-ai-badge)) {
+	position: relative;
+}
+
+/* Where supported, anchor the badge to the image box itself, so it sits on the image even when the
+   parent is wider (a centred, contained image). The fallbacks in anchor() keep the plain position
+   for badges without an image beside them (CSS background images). */
+@supports (anchor-scope: all) {
+	:where(:has(> img + .nm-ai-badge)) {
+		anchor-scope: --nm-ai-badge;
+	}
+
+	:where(img:has(+ .nm-ai-badge)) {
+		anchor-name: --nm-ai-badge;
+	}
+
+	.nm-ai-badge {
+		position-anchor: --nm-ai-badge;
+		right: anchor(right, 0px);
+		bottom: calc(anchor(bottom, 0px) + var(--space-xs, 0.5em));
+	}
+}
+
 @media print {
 	.nm-ai-badge {
 		position: static;

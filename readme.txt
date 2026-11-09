@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.7.0
+Stable tag: 0.8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,7 @@ The default style uses single-class selectors and no `!important`, so overriding
 Some images are backgrounds rather than content: they are positioned absolutely against their container and stretched to fill it. Wrapping such an image would collapse it, so there the badge goes in as a plain sibling of the image instead. This applies to the cover block's background image and to Etch's `is-bg` utility; the class list is filterable via `nm_ai_badger_background_image_classes`.
 
 Etch's `is-bg` background utility styles the image with a direct-child selector and positions it absolutely inside its figure. For those images the plugin leaves the wrapper out and renders the badge as a sibling of the image instead, so the background keeps working and the badge still appears over it.
+The same happens for any Etch element whose only content is the image, whatever its class names. That covers hand-built background recipes (an absolutely placed figure with `> img { inline-size: 100%; block-size: 100%; object-fit: cover }`) and every other layout that sizes the image through its direct parent. The parent then becomes the badge's positioning context, but only if it is not positioned already. Where the browser supports CSS anchor positioning, the badge is anchored to the image box itself.
 
 = Block editor =
 
@@ -73,7 +74,7 @@ Labelled images also show a badge preview on the editor canvas, drawn as a CSS p
 
 = Known limitation =
 
-Everywhere else the plugin wraps the `<img>` in a `<span>` to create a positioning context. A stylesheet that targets images with a direct-child selector such as `.card > img` will no longer match. Descendant selectors (`.card img`) are unaffected. Add `nm-ai-badge-nowrap` to such an image to keep the badge but drop the wrapper.
+Everywhere else (an image with siblings, or a Gutenberg image block) the plugin wraps the `<img>` in a `<span>` to create a positioning context. A stylesheet that targets images with a direct-child selector such as `.card > img` will no longer match. Descendant selectors (`.card img`) are unaffected. Add `nm-ai-badge-nowrap` to such an image to keep the badge but drop the wrapper.
 
 == Filters ==
 
@@ -126,6 +127,11 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+= 0.8.0 =
+* Fixed: background images under custom class names broke when labelled. An Etch element whose only content is the image (the usual background recipe: an absolutely placed figure, `> img` sized to 100 % with `object-fit: cover`) no longer gets the wrapper; the badge goes in beside the image. Detected structurally, so it works for any class name, not only `is-bg`.
+* A badge beside its image is positioned against the parent, which becomes `position: relative` only if it is not positioned already (zero-specificity rule).
+* Where the browser supports CSS anchor positioning, the badge is anchored to the image box itself, so it stays on the image even when the parent is wider. Other browsers place it at the parent's corner.
+
 = 0.7.0 =
 * New default badge look: a dark, uppercase tab flush to the right edge of the image, no rounded corners. It uses Automatic.css tokens where the site has them (`--bg-ultra-dark`, `--text-xs`, `--space-xs`) and plain fallbacks elsewhere. The editor canvas preview matches.
 * To get the previous look back, put this into the Custom CSS field: `.nm-ai-badge { right: auto; left: 0.5em; bottom: 0.5em; padding: 0.25em 0.6em; border-radius: 2em; background: rgba(0, 0, 0, 0.65); font-size: 0.75rem; font-weight: 400; line-height: 1.4; letter-spacing: 0.01em; text-transform: none; }`

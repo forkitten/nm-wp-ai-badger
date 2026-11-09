@@ -79,6 +79,15 @@ function maybe_unwrap_background( string $block_content, array $block ): string 
 		return $block_content;
 	}
 
+	// An image that is the element's only content is sized by that element — typically a
+	// background recipe (`figure { position: absolute; inset: 0 } > img { inline-size: 100%;
+	// block-size: 100%; object-fit: cover }`) under whatever class name. A wrapper there breaks the
+	// direct-child selector and percentage sizes, while the element's own box already matches the
+	// image, so the badge goes in as a sibling. Detected structurally, no class list needed.
+	if ( wrapper_is_only_child( $block_content ) ) {
+		return unwrap_badge( $block_content );
+	}
+
 	$class_attr = $block['attrs']['attributes']['class'] ?? '';
 
 	if ( ! is_string( $class_attr ) || '' === $class_attr ) {
@@ -92,6 +101,18 @@ function maybe_unwrap_background( string $block_content, array $block ): string 
 	}
 
 	return unwrap_badge( $block_content );
+}
+
+/**
+ * Whether the rendered element holds nothing but one wrapped, badged image.
+ *
+ * @param string $html Rendered element HTML: one outer tag around its content.
+ */
+function wrapper_is_only_child( string $html ): bool {
+	return 1 === preg_match(
+		'#^\s*<([a-z][a-z0-9-]*)\b[^>]*>\s*<span class="nm-ai-badge-wrap"><img\b[^>]*><span class="nm-ai-badge [^"]*">[^<]*</span></span>\s*</\1>\s*$#is',
+		$html
+	);
 }
 
 /**
