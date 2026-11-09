@@ -137,25 +137,27 @@ function canvas_css(): string {
 .wp-block{$attr}::after {
 	content: attr(" . DATA_ATTRIBUTE . ");
 	position: absolute;
-	bottom: 0.5em;
-	left: 0.5em;
+	right: 0;
+	bottom: var(--space-xs, 0.5em);
 	z-index: 21;
-	padding: 0.25em 0.6em;
-	border-radius: 2em;
-	background: rgba(0, 0, 0, 0.65);
+	padding: 0.2rem 0.4rem;
+	border-radius: 0;
+	background: var(--bg-ultra-dark, #111);
 	color: #fff;
 	font-family: inherit;
-	font-size: 0.75rem;
-	font-weight: 400;
-	line-height: 1.4;
-	letter-spacing: 0.01em;
+	font-size: var(--text-xs, 0.75rem);
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	white-space: nowrap;
 	pointer-events: none;
 }
 
 /* With a caption the bottom edge belongs to the text, so the badge moves to the top of the image.
    Direct child only: a cover block may contain a captioned image without being captioned itself. */
 .wp-block{$attr}:has( > figcaption )::after {
-	top: 0.5em;
+	top: var(--space-xs, 0.5em);
 	bottom: auto;
 }
 ";

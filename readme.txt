@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -126,6 +126,10 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+= 0.7.0 =
+* New default badge look: a dark, uppercase tab flush to the right edge of the image, no rounded corners. It uses Automatic.css tokens where the site has them (`--bg-ultra-dark`, `--text-xs`, `--space-xs`) and plain fallbacks elsewhere. The editor canvas preview matches.
+* To get the previous look back, put this into the Custom CSS field: `.nm-ai-badge { right: auto; left: 0.5em; bottom: 0.5em; padding: 0.25em 0.6em; border-radius: 2em; background: rgba(0, 0, 0, 0.65); font-size: 0.75rem; font-weight: 400; line-height: 1.4; letter-spacing: 0.01em; text-transform: none; }`
+
 = 0.6.0 =
 * Added machine-readable labelling: labelled images get `data-ai-label` and `data-digital-source-type` (IPTC Digital Source Type URI) on the `<img>`, or on the block element for CSS background images.
 * Fixed: the default badge texts were not translated. They now follow the site language (German: "KI-generiert", "KI-unterstützt") until they are changed in the settings.

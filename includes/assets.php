@@ -55,20 +55,24 @@ function default_css(): string {
 	position: relative;
 }
 
+/* Dark tab flush to the right edge of the image. Uses Automatic.css tokens where the site has
+   them (--bg-ultra-dark, --text-xs, --space-xs) and plain values elsewhere. */
 .nm-ai-badge {
 	position: absolute;
-	bottom: 0.5em;
-	left: 0.5em;
+	right: 0;
+	bottom: var(--space-xs, 0.5em);
 	z-index: 2;
-	padding: 0.25em 0.6em;
-	border-radius: 2em;
-	background: rgba(0, 0, 0, 0.65);
+	padding: 0.2rem 0.4rem;
+	border-radius: 0;
+	background: var(--bg-ultra-dark, #111);
 	color: #fff;
 	font-family: inherit;
-	font-size: 0.75rem;
-	font-weight: 400;
-	line-height: 1.4;
-	letter-spacing: 0.01em;
+	font-size: var(--text-xs, 0.75rem);
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	white-space: nowrap;
 	text-decoration: none;
 	pointer-events: none;
 }
