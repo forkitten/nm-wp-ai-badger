@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,11 @@ The list is filterable, see `nm_ai_badger_supported_blocks` below.
 * Featured images rendered by a theme template's `the_post_thumbnail()` rather than by the featured image block
 * Other page builders (Beaver Builder, Bricks)
 
+= Machine-readable labelling =
+Besides the visible badge, every labelled image carries two attributes on its `<img>`:
+* `data-ai-label` — the stable label value, `generated` or `assisted`
+* `data-digital-source-type` — the matching IPTC Digital Source Type, `http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia` for AI-generated and `…/compositeWithTrainedAlgorithmicMedia` for AI-assisted images
+Embedded IPTC or C2PA metadata in the image file is the classic place for this, but WordPress often strips it when it resizes or converts images (GD always does). The HTML attributes survive regardless. A block whose image is a CSS background has no `<img>`, so there the block's outer element carries them.
 = Hiding the badge on a single image =
 
 In the block editor, tick "Hide the badge here" in the image block's sidebar. The checkbox appears once the image carries a labelling.
@@ -121,6 +126,10 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+= 0.6.0 =
+* Added machine-readable labelling: labelled images get `data-ai-label` and `data-digital-source-type` (IPTC Digital Source Type URI) on the `<img>`, or on the block element for CSS background images.
+* Fixed: the default badge texts were not translated. They now follow the site language (German: "KI-generiert", "KI-unterstützt") until they are changed in the settings.
+
 
 = 0.5.0 =
 * Added support for the media & text block and for background images on group, row and stack blocks. A group's background is pure CSS with no image element, so there the badge becomes the block's own last child.

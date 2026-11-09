@@ -3,7 +3,7 @@
  * Plugin Name:       NM AI Badger
  * Plugin URI:        https://netzmaedchen.de/
  * Description:       Marks media library images as AI-generated or AI-assisted and renders a badge on the front end, server-side, for Gutenberg and Etch images.
- * Version:           0.5.0
+ * Version:           0.6.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            netzmaedchen
@@ -22,7 +22,7 @@ namespace NM\AIBadger;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.5.0';
+const VERSION = '0.6.0';
 
 /**
  * Attachment meta key holding the label. Stable — display texts live in the settings.
@@ -54,6 +54,16 @@ const HOST_CLASS = 'nm-ai-badge-host';
  * The stable, code-side label values. Never change these — display texts are configurable.
  */
 const LABELS = array( 'generated', 'assisted' );
+
+/**
+ * IPTC Digital Source Type per label — the established vocabulary for AI provenance, written onto
+ * the labelled <img> as `data-digital-source-type` so the labelling is machine-readable in the
+ * HTML too (resized and converted image files often lose their embedded metadata).
+ */
+const IPTC_SOURCE_TYPES = array(
+	'generated' => 'http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia',
+	'assisted'  => 'http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia',
+);
 
 define( 'NM\AIBadger\PLUGIN_FILE', __FILE__ );
 define( 'NM\AIBadger\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

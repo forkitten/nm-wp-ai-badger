@@ -13,6 +13,7 @@ use NM\AIBadger\Media;
 use NM\AIBadger\Settings;
 use const NM\AIBadger\EXCLUDE_CLASS;
 use const NM\AIBadger\HOST_CLASS;
+use const NM\AIBadger\IPTC_SOURCE_TYPES;
 use const NM\AIBadger\NOWRAP_CLASS;
 
 defined( 'ABSPATH' ) || exit;
@@ -174,9 +175,9 @@ function maybe_inject_badge( string $block_content, array $block, ?\WP_Block $in
 	$badge = badge_html( $label, $text );
 
 	// A block whose image is a CSS background has no <img> to attach to: the badge becomes the
-	// element's own last child instead.
+	// element's own last child instead, and the element itself carries the machine-readable marking.
 	if ( '' !== background_image_url( $block ) ) {
-		return append_badge_to_element( $block_content, $badge );
+		return append_badge_to_element( mark_image( $block_content, $label, '', false ), $badge );
 	}
 
 	// An image that fills or backs its container is sized and positioned against that container by
@@ -185,8 +186,12 @@ function maybe_inject_badge( string $block_content, array $block, ?\WP_Block $in
 	$host = bare_image_host( $block_content, $block );
 
 	if ( null !== $host ) {
+		$block_content = mark_image( $block_content, $label, $host['image_class'] );
+
 		return append_badge_after_image( $block_content, $host['image_class'], $badge, $host['host_class'] );
 	}
+
+	$block_content = mark_image( $block_content, $label );
 
 	$wrapped = wrap_image( $block_content, $badge );
 
@@ -371,6 +376,41 @@ function unwrap_gallery_badges( string $block_content ): string {
 	);
 
 	return is_string( $result ) ? $result : $unwrapped;
+}
+
+/**
+ * Mark the labelled image machine-readably.
+ *
+ * Sets `data-ai-label` (the stable label value) and `data-digital-source-type` (the IPTC Digital
+ * Source Type URI) on the image, so crawlers and tools can read the labelling without parsing the
+ * visible badge. Image files often lose their embedded IPTC/C2PA metadata when WordPress resizes or
+ * converts them, so the HTML marking is the part that reliably survives.
+ *
+ * @param string $html        Rendered block HTML.
+ * @param string $label       Stable label value.
+ * @param string $image_class Class identifying the image, empty for the first one.
+ * @param bool   $image_only  False marks the first tag instead (a CSS background has no <img>).
+ */
+function mark_image( string $html, string $label, string $image_class = '', bool $image_only = true ): string {
+	if ( ! isset( IPTC_SOURCE_TYPES[ $label ] ) ) {
+		return $html;
+	}
+
+	$processor = new \WP_HTML_Tag_Processor( $html );
+	$query     = $image_only ? array( 'tag_name' => 'img' ) : array();
+
+	if ( $image_only && '' !== $image_class ) {
+		$query['class_name'] = $image_class;
+	}
+
+	if ( ! $processor->next_tag( $query ) ) {
+		return $html;
+	}
+
+	$processor->set_attribute( 'data-ai-label', $label );
+	$processor->set_attribute( 'data-digital-source-type', IPTC_SOURCE_TYPES[ $label ] );
+
+	return $processor->get_updated_html();
 }
 
 /**

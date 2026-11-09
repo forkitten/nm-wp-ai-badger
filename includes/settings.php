@@ -32,8 +32,8 @@ function bootstrap(): void {
  */
 function defaults(): array {
 	return array(
-		'label_generated' => 'AI-generated',
-		'label_assisted'  => 'AI-assisted',
+		'label_generated' => __( 'AI-generated', 'nm-wp-ai-badger' ),
+		'label_assisted'  => __( 'AI-assisted', 'nm-wp-ai-badger' ),
 		'custom_css'      => '',
 	);
 }
