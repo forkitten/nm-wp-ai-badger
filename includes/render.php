@@ -84,6 +84,8 @@ function maybe_unwrap_background( string $block_content, array $block ): string 
 	// block-size: 100%; object-fit: cover }`) under whatever class name. A wrapper there breaks the
 	// direct-child selector and percentage sizes, while the element's own box already matches the
 	// image, so the badge goes in as a sibling. Detected structurally, no class list needed.
+	// Empty siblings such as a gradient overlay do not count as content: an image banner is
+	// `section > img + div.overlay`, with the image absolutely placed against the section.
 	if ( wrapper_is_only_child( $block_content ) ) {
 		return unwrap_badge( $block_content );
 	}
@@ -104,13 +106,18 @@ function maybe_unwrap_background( string $block_content, array $block ): string 
 }
 
 /**
- * Whether the rendered element holds nothing but one wrapped, badged image.
+ * Whether the rendered element holds nothing but one wrapped, badged image, apart from empty
+ * decoration elements (overlays, gradients) before or after it.
+ *
+ * Only the element's direct content is inspected, so a wrapped image deeper down never counts.
  *
  * @param string $html Rendered element HTML: one outer tag around its content.
  */
 function wrapper_is_only_child( string $html ): bool {
+	$empty = '(?:\s*<([a-z][a-z0-9-]*)\b[^>]*>\s*</\g{-1}>)*';
+
 	return 1 === preg_match(
-		'#^\s*<([a-z][a-z0-9-]*)\b[^>]*>\s*<span class="nm-ai-badge-wrap"><img\b[^>]*><span class="nm-ai-badge [^"]*">[^<]*</span></span>\s*</\1>\s*$#is',
+		'#^\s*<([a-z][a-z0-9-]*)\b[^>]*>' . $empty . '\s*<span class="nm-ai-badge-wrap"><img\b[^>]*><span class="nm-ai-badge [^"]*">[^<]*</span></span>' . $empty . '\s*</\1>\s*$#is',
 		$html
 	);
 }

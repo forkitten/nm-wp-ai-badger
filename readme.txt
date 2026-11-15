@@ -4,7 +4,7 @@ Tags: ai, media, images, labelling, compliance
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.8.0
+Stable tag: 0.8.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,7 +60,7 @@ The default style uses single-class selectors and no `!important`, so overriding
 Some images are backgrounds rather than content: they are positioned absolutely against their container and stretched to fill it. Wrapping such an image would collapse it, so there the badge goes in as a plain sibling of the image instead. This applies to the cover block's background image and to Etch's `is-bg` utility; the class list is filterable via `nm_ai_badger_background_image_classes`.
 
 Etch's `is-bg` background utility styles the image with a direct-child selector and positions it absolutely inside its figure. For those images the plugin leaves the wrapper out and renders the badge as a sibling of the image instead, so the background keeps working and the badge still appears over it.
-The same happens for any Etch element whose only content is the image, whatever its class names. That covers hand-built background recipes (an absolutely placed figure with `> img { inline-size: 100%; block-size: 100%; object-fit: cover }`) and every other layout that sizes the image through its direct parent. The parent then becomes the badge's positioning context, but only if it is not positioned already. Where the browser supports CSS anchor positioning, the badge is anchored to the image box itself.
+The same happens for any Etch element whose only content is the image, whatever its class names. Empty decoration elements beside the image (a gradient overlay, for example) do not count as content, so an image banner (`section > img + div.overlay`, with the image absolutely placed against the section) is covered too. That covers hand-built background recipes (an absolutely placed figure with `> img { inline-size: 100%; block-size: 100%; object-fit: cover }`) and every other layout that sizes the image through its direct parent. The parent then becomes the badge's positioning context, but only if it is not positioned already. Where the browser supports CSS anchor positioning, the badge is anchored to the image box itself.
 
 = Block editor =
 
@@ -127,6 +127,9 @@ For a public repository no credentials are needed. If the repository is private,
 It is read from there on purpose, so the token never travels inside the plugin ZIP. Filters: `nm_ai_badger_repository_url`, `nm_ai_badger_github_token`. Define `NM_AI_BADGER_DISABLE_UPDATER` as true to switch update checks off entirely.
 
 == Changelog ==
+= 0.8.1 =
+* Fixed: an image banner lost its background image once the image was labelled. Empty decoration elements beside the image (a gradient overlay, for example `section > img + div.overlay`) no longer count as content, so the element gets no wrapper and the absolutely placed image keeps its section as positioning context. Detected structurally, for any class name.
+
 = 0.8.0 =
 * Fixed: background images under custom class names broke when labelled. An Etch element whose only content is the image (the usual background recipe: an absolutely placed figure, `> img` sized to 100 % with `object-fit: cover`) no longer gets the wrapper; the badge goes in beside the image. Detected structurally, so it works for any class name, not only `is-bg`.
 * A badge beside its image is positioned against the parent, which becomes `position: relative` only if it is not positioned already (zero-specificity rule).
